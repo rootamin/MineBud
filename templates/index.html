@@ -21,15 +21,21 @@
                 </div>
                 <div class="card-body">
 
-                    <div class="col-md-4">
-                        <div class="card h-100" style="background-color: transparent">
-                            <img src="event-img.png" class="card-img-top img-fluid" alt="...">
-                            <div class="card-body text-white">
-                                <h5 class="card-title green">Event title</h5>
-                                <p class="card-text">Event description</p>
-                                <p style="color: #b4bec7">15 minutes ago</p>
+                    <div class="row">
+
+                        {% for event in events %}
+                            <div class="col-md-4">
+                                <div class="card h-100" style="background-color: transparent">
+                                    <img src="{{ event.image.url }}" class="card-img-top img-fluid" alt="...">
+                                    <div class="card-body text-white">
+                                        <h5 class="card-title green">{{ event.title }}</h5>
+                                        <p class="card-text">{{ event.description }}</p>
+                                        <p style="color: #b4bec7">{{ event.created|timesince }} ago</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        {% endfor %}
+
                     </div>
 
                 </div>
