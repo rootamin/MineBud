@@ -1,7 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <h1>Hello, World!</h1>
+    <div class="container" style="padding-top: 15px">
+
+        <div class="card text-bg-success">
+            <div class="card-header">
+                Server Status: 🟢Online
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">MineBud, a place where you can have fun!</h5>
+                <p class="card-text">In here, you can have fun with people, explore vast lands of Minecraft, and monitor your gameplay status. make sure to bring your friends as well! it's free!</p>
+            </div>
+        </div>
+
+
+        <div style="padding-top: 15px">
+            <div class="card text-bg-success">
+                <div class="card-header">
+                    Events
+                </div>
+                <div class="card-body">
+
+                    <div class="col-md-4">
+                        <div class="card h-100" style="background-color: transparent">
+                            <img src="event-img.png" class="card-img-top img-fluid" alt="...">
+                            <div class="card-body text-white">
+                                <h5 class="card-title green">Event title</h5>
+                                <p class="card-text">Event description</p>
+                                <p style="color: #b4bec7">15 minutes ago</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
     </div>
 {% endblock %}
