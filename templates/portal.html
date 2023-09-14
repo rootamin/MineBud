@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %}User Portal{% endblock %}
+{% block content %}
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-xl-10">
+                <div class="card" style="border-radius: 1rem;">
+                    <div class="row g-0">
+
+                        <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                            <div class="card-body p-4 p-lg-5 text-black">
+
+                                {% include 'messages.html' %}
+
+                                <form class="text-white" action="" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {{ profile_form|crispy }}
+
+                                    <div class="pt-1 mb-4">
+                                        <button class="btn btn-lg btn-block text-white" type="submit" style="background-color: #0c7472">Save</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-5 container" style="padding-top: 20px">
+                            <center><img src="{{ player_profile.profile_pic.url }}" alt="login form" class="img-fluid text-center" style="border-radius: 1rem 1rem 1rem 1rem;"/></center>
+                            <br>
+                            <div class="card d-flex justify-content-center contact-card-container">
+                                <p>Username: {{ player_profile.username }}</p>
+                                <p>Email: {{ player_profile.email }}</p>
+                                <p>Permission:
+                                    {% if request.user.is_superuser %}
+                                        Superadmin</p>
+                                        <p>You have full access to the website. Please double check before performing any actions.</p>
+                                        <a href="{% url 'admin' %}">Admin Panel</a><a href="/management">Management Panel</a>
+                                    {% elif request.user.is_staff %}
+                                        Admin</p>
+                                        <a href="{% url 'admin' %}">Admin panel</a><a href="/management">Management Panel</a>
+                                    {% else %}
+                                        User</p>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

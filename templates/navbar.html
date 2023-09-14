@@ -20,7 +20,7 @@
 <header>
     <nav class="navbar navbar-expand-lg" data-bs-theme="light" style="background-color: #7fff00">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">MineBud</a>
+            <a class="navbar-brand" href="{% url "home" %}">MineBud</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -32,12 +32,22 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Events</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'portal' %}">{% if request.user.is_authenticated %}Portal{% endif %}</a>
+                    </li>
                 </ul>
 
-                <div class="profile-card">
-                    <img src="profile-image.jpg" alt="User Profile Image" class="profile-image">
-                    <span class="username">Username</span>
-                </div>
+                {% if request.user.is_authenticated %}
+                    <div class="profile-card text-black">
+                        <img src="{{ player_pic.url }}" alt="User Profile Image" class="profile-image">
+                        <span class="username">{{ player_username }}</span>
+                        <span class="signout" style="font-size: 0.8em;"><a href="{% url 'logout' %}">Sign Out</a></span>
+                    </div>
+                {% else %}
+                    <div class="profile-card">
+                        <a class="btn btn-success" href="{% url 'portal' %}">Portal</a>
+                    </div>
+                {% endif %}
 
             </div>
         </div>

@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
+{% block title %}Home{% endblock %}
+
 {% block content %}
     <div class="container" style="padding-top: 15px">
+        {% include "messages.html" %}
 
         <div class="card text-bg-success">
             <div class="card-header">
