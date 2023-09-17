@@ -4,9 +4,32 @@
     socket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var cpuPercent = data.cpu_percent;
+        var usedStorageUsage = data.used_space;
+        var totalStorageUsage = data.total_space;
+        var usedStoragePercentage = data.used_space_percentage;
+        var bandwidthSent = data.bandwidth_sent;
+        var bandwidthRecv = data.bandwidth_received;
+        var bandwidthSentPercentage = Math.round((parseFloat(bandwidthSent) / (parseFloat(bandwidthSent) + parseFloat(bandwidthRecv)) * 100));
+        var bandwidthRecvPercentage = Math.round((parseFloat(bandwidthRecv) / (parseFloat(bandwidthSent) + parseFloat(bandwidthRecv)) * 100));
+        var totalSent = data.total_sent;
+        var totalRecv = data.total_recv;
 
         // Update the content of the 'cpu-percent' element
         document.getElementById('cpu-percent').textContent = cpuPercent;
+        document.getElementById('cpu-progress').style.width = cpuPercent + '%';
+
+        // Update the content of storage-usage & storage-total elements
+        document.getElementById('storage-usage').textContent = usedStorageUsage;
+        document.getElementById('storage-total').textContent = totalStorageUsage;
+        document.getElementById('storage-progress').style.width = usedStoragePercentage + '%';
+
+        // Update the content of network-bandwidth element
+        document.getElementById('bandwidth-sent').textContent = bandwidthSent;
+        document.getElementById('bandwidth-recv').textContent = bandwidthRecv;
+        document.getElementById('progress-sent').style.width = bandwidthSentPercentage + '%';
+        document.getElementById('progress-recv').style.width = bandwidthRecvPercentage + '%';
+        document.getElementById('total-sent').textContent = totalSent;
+        document.getElementById('total-recv').textContent = totalRecv;
     };
 
     window.addEventListener('beforeunload', function(event) {
@@ -26,9 +49,33 @@
             socket.onmessage = function(e) {
                 var data = JSON.parse(e.data);
                 var cpuPercent = data.cpu_percent;
+                var usedStorageUsage = data.used_space;
+                var totalStorageUsage = data.total_space;
+                var usedStoragePercentage = data.used_space_percentage;
+                var bandwidthSent = data.bandwidth_sent;
+                var bandwidthRecv = data.bandwidth_received;
+                var bandwidthSentPercentage = Math.round((parseFloat(bandwidthSent) / (parseFloat(bandwidthSent) + parseFloat(bandwidthRecv)) * 100));
+                var bandwidthRecvPercentage = Math.round((parseFloat(bandwidthRecv) / (parseFloat(bandwidthSent) + parseFloat(bandwidthRecv)) * 100));
+                var totalSent = data.total_sent;
+                var totalRecv = data.total_recv;
+
 
                 // Update the content of the 'cpu-percent' element
                 document.getElementById('cpu-percent').textContent = cpuPercent;
+                document.getElementById('cpu-progress').style.width = cpuPercent + '%';
+
+                // Update the content of storage-usage & storage-total elements
+                document.getElementById('storage-usage').textContent = usedStorageUsage;
+                document.getElementById('storage-total').textContent = totalStorageUsage;
+                document.getElementById('storage-progress').style.width = usedStoragePercentage + '%';
+
+                // Update the content of network-bandwidth element
+                document.getElementById('bandwidth-sent').textContent = bandwidthSent;
+                document.getElementById('bandwidth-recv').textContent = bandwidthRecv;
+                document.getElementById('progress-sent').style.width = bandwidthSentPercentage + '%';
+                document.getElementById('progress-recv').style.width = bandwidthRecvPercentage + '%';
+                document.getElementById('total-sent').textContent = totalSent;
+                document.getElementById('total-recv').textContent = totalRecv;
             };
         }
     });
@@ -39,6 +86,80 @@
 {% block title %}Admin Section{% endblock %}
 
 {% block content %}
-    <h1>Admin Panel</h1>
-    <p id="cpu-usage">CPU: <span id="cpu-percent">0</span>%</p>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-6" style="padding-top: 15px">
+                <div class="card text-bg-success">
+                    <h5 class="card-header">CPU Usage</h5>
+                    <div class="card-body">
+                        <h5 class="card-title"><span id="cpu-percent">0</span>%</h5>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" id="cpu-progress" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6" style="padding-top: 15px">
+                <div class="card text-bg-success">
+                    <h5 class="card-header">Player Count</h5>
+                    <div class="card-body">
+                        <h5 class="card-title"><span id="player-count">0</span></h5>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" id="player-progress" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6" style="padding-top: 15px">
+                <div class="card text-bg-success">
+                    <h5 class="card-header">Uptime</h5>
+                    <div class="card-body">
+                        <h5 class="card-title"><span id="uptime">0</span></h5>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6" style="padding-top: 15px">
+                <div class="card text-bg-success">
+                    <h5 class="card-header">Storage Usage</h5>
+                    <div class="card-body">
+                        <h5 class="card-title"><span id="storage-usage">0</span>/<span id="storage-total">0</span> GB</h5>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" id="storage-progress" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6" style="padding-top: 15px">
+                <div class="card text-bg-success">
+                    <h5 class="card-header">Network Usage</h5>
+                    <div class="card-body">
+                        <p class="card-title">Uploaded:<span id="total-sent">0</span> GB, Downloaded:<span id="total-recv">0</span> GB</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6" style="padding-top: 15px">
+                <div class="card text-bg-success">
+                    <h5 class="card-header">Server Bandwidth</h5>
+                    <div class="card-body">
+                        <p class="card-title">Uplink:<span id="bandwidth-sent">0</span>MB, Downlink:<span id="bandwidth-recv">0</span>MB</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" id="progress-sent" style="width: 0%;">Uplink</div>
+                            <div class="progress-bar bg-warning" id="progress-recv" style="width: 0%;">Downlink</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
