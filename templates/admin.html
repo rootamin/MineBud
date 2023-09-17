@@ -1,7 +1,27 @@
-{% extends 'base.html' %}
+<script>
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/cpu/');
 
-{% block title %}Admin Section{% endblock %}
+    window.addEventListener('beforeunload', function(event) {
+        // Close the WebSocket connection
+        socket.close();
+    });
+    socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var cpuPercent = data.cpu_percent;
 
-{% block content %}
-    <h1>Admin Panel</h1>
-{% endblock %}
+        // Update the content of the 'cpu-percent' element
+        document.getElementById('cpu-percent').textContent = cpuPercent;
+    };
+
+    socket.onopen = function(e) {
+        // Send 'get_cpu' message every 1 seconds
+        setInterval(function() {
+            socket.send(JSON.stringify({
+                'message': 'get_cpu'
+            }));
+        }, 1000); // 1000 milliseconds = 1 seconds
+    };
+
+
+</script>
+<p id="cpu-usage">CPU: <span id="cpu-percent">0</span>%</p>
