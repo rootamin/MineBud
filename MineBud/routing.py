@@ -9,6 +9,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MineBud.settings')
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": URLRouter([
-        path("ws/cpu/", consumers.CPUConsumer.as_asgi()),
+        path("ws/system/", consumers.SystemConsumer.as_asgi()),
     ]),
 })
