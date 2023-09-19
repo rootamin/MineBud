@@ -7,7 +7,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.connected = True
         await self.accept()
-        self.task = asyncio.create_task(self.send_cpu_usage())
+        self.task = asyncio.create_task(self.send_system_usage())
 
     async def disconnect(self, close_code):
         self.connected = False
@@ -17,11 +17,11 @@ class SystemConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         pass
 
-    async def send_cpu_usage(self):
+    async def send_system_usage(self):
         old_value = psutil.net_io_counters(pernic=False)
         while self.connected:
             # CPU
-            cpu_percent = psutil.cpu_percent(interval=3)
+            cpu_percent = psutil.cpu_percent(interval=1)
 
             # Storage
             partitions = psutil.disk_partitions()
