@@ -190,6 +190,43 @@
             <div class="col-md-6">
                 <button onclick="startServer()">Start Server</button>
                 <button onclick="stopServer()">Stop Server</button>
+
+                <div id="console"></div>
+                <input type="text" id="command">
+                <button onclick="sendCommand()">Send Command</button>
+
+
+
+                <script>
+                    // Java live console websockets section
+                    var socket;
+
+                    function connect() {
+                        socket = new WebSocket('ws://' + window.location.host + '/ws/console/');
+                        socket.onmessage = function(e) {
+                            var console = document.getElementById('console');
+                            console.innerHTML += e.data + '<br>';
+                        };
+                        socket.onclose = function(e) {
+                            console.error('Chat socket closed unexpectedly');
+                        };
+                    }
+
+                    connect();
+
+                    setInterval(function() {
+                        if (socket.readyState !== WebSocket.OPEN) {
+                            connect();
+                        }
+                    }, 5000);
+
+                    function sendCommand() {
+                        var command = document.getElementById('command').value;
+                        socket.send(command);
+                    }
+                </script>
+
+
             </div>
         </div>
     </div>

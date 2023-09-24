@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
-import sys
+import sys, signal
+from server.minecraft import MinecraftServer
 
+minecraft_server = MinecraftServer()
 
 def main():
     """Run administrative tasks."""
@@ -17,6 +19,14 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+
+def handler(signum, frame):
+    print('SIGTERM received')
+    minecraft_server.stop()
+    sys.exit(0)
+
+
+signal.signal(signal.SIGTERM, handler)
 
 if __name__ == '__main__':
     main()
