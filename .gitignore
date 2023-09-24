@@ -161,3 +161,8 @@ cython_debug/
 
 /world/
 .idea
+minecraft/world
+minecraft/world
+minecraft/.fabric
+minecraft/libraries
+minecraft/versions/1.20.2
