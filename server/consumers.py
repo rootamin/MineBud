@@ -1,7 +1,9 @@
 import asyncio
 import psutil
-from channels.generic.websocket import AsyncWebsocketConsumer
-import json
+from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
+import json, threading
+from .minecraft import process
+
 
 class SystemConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -61,3 +63,22 @@ class SystemConsumer(AsyncWebsocketConsumer):
             old_value = new_value
 
             await asyncio.sleep(1)  # sleep for 1 second
+
+
+class ConsoleConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+        if process:
+            threading.Thread(target=self.send_output).start()
+
+    def disconnect(self, close_code):
+        pass
+
+    def receive(self, text_data):
+        if process:
+            process.stdin.write(text_data.encode())
+            process.stdin.flush()
+
+    def send_output(self):
+        for line in iter(process.stdout.readline, b''):
+            self.send(line.decode())

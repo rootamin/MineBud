@@ -79,6 +79,47 @@
             };
         }
     });
+
+
+    // Java console section
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/console/');
+
+    socket.onmessage = function(e) {
+        var console = document.getElementById('console');
+        console.innerHTML += e.data + '<br>';
+    };
+
+    socket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#input').focus();
+    document.querySelector('#input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#send').click();
+        }
+    };
+
+    document.querySelector('#send').onclick = function(e) {
+        var messageInputDom = document.querySelector('#input');
+        var message = messageInputDom.value;
+        socket.send(message);
+        messageInputDom.value = '';
+    };
+
+
+    // Start or stop Minecraft server
+    function startServer() {
+        fetch('/server/start-server/')
+            .then(response => response.json())
+            .then(data => console.log(data));
+    }
+
+    function stopServer() {
+        fetch('/server/stop-server/')
+            .then(response => response.json())
+            .then(data => console.log(data));
+    }
 </script>
 
 {% extends 'base.html' %}
@@ -175,6 +216,12 @@
             </div>
 
             <div class="col-md-6">
+                <button onclick="startServer()">Start Server</button>
+                <button onclick="stopServer()">Stop Server</button>
+
+                <div id="console"></div>
+                <input type="text" id="input">
+                <button onclick="sendInput()">Send</button>
             </div>
         </div>
     </div>

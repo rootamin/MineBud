@@ -10,5 +10,6 @@ application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": URLRouter([
         path("ws/system/", consumers.SystemConsumer.as_asgi()),
+        path("ws/console/", consumers.ConsoleConsumer.as_asgi()),
     ]),
 })
