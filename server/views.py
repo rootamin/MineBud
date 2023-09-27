@@ -58,7 +58,7 @@ def stop_server(request):
     if request.user.is_superuser or request.user.groups.filter(name="Server Manager"):
         if minecraft_server.process:
             minecraft_server.stop()
-            messages.success(request, "Server stopped.", extra_tags="alert alert-success")
+            messages.success(request, "Server has been force stopped. your recent progress might not be saved unless you've stopped the server from console.", extra_tags="alert alert-info")
             return redirect("admin")
         else:
             messages.warning(request, "Server is not running. if there are any instances, just kill them.", extra_tags="alert alert-danger")

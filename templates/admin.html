@@ -166,7 +166,7 @@
         </div>
 
         <div class="row" style="padding-top: 15px">
-            <div class="col-md-6 card text-bg-success">
+            <div class="col-md-6 card text-bg-success" style="overflow-y: auto; max-height: 650px">
                 <form action=""  method="POST">
                     {% csrf_token %}
                     {{ server_properties|crispy }}
@@ -176,12 +176,13 @@
 
             <div class="col-md-6">
                 <a class="btn btn-primary" href="{% url 'start_server' %}">Start Server</a>
-                <a class="btn btn-primary" href="{% url 'stop_server' %}">Force Stop Server</a>
+                <button class="btn btn-info" id="stopButton">Stop Server</button>
+                <a class="btn btn-danger" href="{% url 'stop_server' %}">Force Stop Server</a>
 
-                <div id="console"></div>
+                <div class="card" id="console" style="overflow-y: auto; overflow-x: auto; min-height: 580px; max-height: 600px"></div>
                 <input type="text" id="command">
                 <button onclick="sendCommand()">Send Command</button>
-
+            </div>
 
 
                 <script>
@@ -193,6 +194,7 @@
                         socket.onmessage = function(e) {
                             var console = document.getElementById('console');
                             console.innerHTML += e.data + '<br>';
+                            console.scrollTop = console.scrollHeight;
                         };
                         socket.onclose = function(e) {
                             console.error('Chat socket closed unexpectedly');
@@ -239,10 +241,14 @@
                             connect();
                         }
                     });
+
+                    document.getElementById('stopButton').addEventListener('click', function() {
+                        if (socket.readyState === WebSocket.OPEN) {
+                            socket.send('/stop');
+                        }
+                    });
+
                 </script>
-
-
-            </div>
         </div>
     </div>
 {% endblock %}
