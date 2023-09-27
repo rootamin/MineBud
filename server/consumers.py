@@ -1,7 +1,8 @@
 import asyncio
 import psutil
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
-import json, threading
+import json
+import threading
 from .views import minecraft_server
 
 
@@ -67,12 +68,11 @@ class SystemConsumer(AsyncWebsocketConsumer):
 
 class ConsoleConsumer(WebsocketConsumer):
     def connect(self):
-        self.accept()
         if minecraft_server.process:
+            self.accept()
             threading.Thread(target=self.send_output).start()
 
     def disconnect(self, close_code):
-        # Handle disconnection
         pass
 
     def receive(self, text_data):

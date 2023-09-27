@@ -79,19 +79,6 @@
             };
         }
     });
-
-    // Start or stop Minecraft server
-    function startServer() {
-        fetch('/server/start-server/')
-            .then(response => response.json())
-            .then(data => console.log(data));
-    }
-
-    function stopServer() {
-        fetch('/server/stop-server/')
-            .then(response => response.json())
-            .then(data => console.log(data));
-    }
 </script>
 
 {% extends 'base.html' %}
@@ -188,8 +175,8 @@
             </div>
 
             <div class="col-md-6">
-                <button onclick="startServer()">Start Server</button>
-                <button onclick="stopServer()">Stop Server</button>
+                <a class="btn btn-primary" href="{% url 'start_server' %}">Start Server</a>
+                <a class="btn btn-primary" href="{% url 'stop_server' %}">Force Stop Server</a>
 
                 <div id="console"></div>
                 <input type="text" id="command">
@@ -216,14 +203,42 @@
 
                     setInterval(function() {
                         if (socket.readyState !== WebSocket.OPEN) {
+                            var console = document.getElementById('console');
+                            console.innerHTML = "Server is offline.";
                             connect();
                         }
-                    }, 5000);
+                    }, 3000); // every 3 seconds
 
                     function sendCommand() {
-                        var command = document.getElementById('command').value;
-                        socket.send(command);
+                        var command = document.getElementById('command');
+                        var console = document.getElementById('console');
+                        console.innerHTML += command.value + '<br>';
+                        socket.send(command.value);
+                        command.value = '';
                     }
+
+                    document.getElementById('command').addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            sendCommand();
+                        }
+                    });
+
+                    window.addEventListener('beforeunload', function(event) {
+                        // Close the WebSocket connection
+                        socket.close();
+                    });
+
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState === 'hidden') {
+                            // The page is no longer visible
+                            // Close the WebSocket connection
+                            socket.close();
+                        } else if (document.visibilityState === 'visible') {
+                            // The page is now visible
+                            // Reconnect the WebSocket
+                            connect();
+                        }
+                    });
                 </script>
 
 
