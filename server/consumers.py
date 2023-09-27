@@ -71,6 +71,9 @@ class ConsoleConsumer(WebsocketConsumer):
         if minecraft_server.process:
             self.accept()
             threading.Thread(target=self.send_output).start()
+        else:
+            self.accept()
+            threading.Thread(target=self.send_offline).start()
 
     def disconnect(self, close_code):
         pass
@@ -84,3 +87,6 @@ class ConsoleConsumer(WebsocketConsumer):
     def send_output(self):
         for line in iter(minecraft_server.process.stdout.readline, b''):
             self.send(line.decode())
+
+    def send_offline(self):
+        self.send("Server Offline")

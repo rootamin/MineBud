@@ -179,9 +179,12 @@
                 <button class="btn btn-info" id="stopButton">Stop Server</button>
                 <a class="btn btn-danger" href="{% url 'stop_server' %}">Force Stop Server</a>
 
-                <div class="card" id="console" style="overflow-y: auto; overflow-x: auto; min-height: 580px; max-height: 600px"></div>
-                <input type="text" id="command">
-                <button onclick="sendCommand()">Send Command</button>
+                <div class="card" id="console" style="overflow-y: auto; overflow-x: auto; min-height: 570px; max-height: 570px"></div>
+
+                <div class="input-group mb-3">
+                    <input type="text" id="command" class="form-control" placeholder="command ..." aria-label="command ..." aria-describedby="button-addon1">
+                    <button class="btn btn-primary" onclick="sendCommand()" type="button" id="button-addon2">Send Command</button>
+                </div>
             </div>
 
 
