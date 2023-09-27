@@ -188,70 +188,73 @@
             </div>
 
 
-                <script>
-                    // Java live console websockets section
-                    var socket;
+            <script>
+                // Java live console websockets section
+                var socket;
+                var reconnect = true;
 
-                    function connect() {
-                        socket = new WebSocket('ws://' + window.location.host + '/ws/console/');
-                        socket.onmessage = function(e) {
-                            var console = document.getElementById('console');
-                            console.innerHTML += e.data + '<br>';
-                            console.scrollTop = console.scrollHeight;
-                        };
-                        socket.onclose = function(e) {
-                            console.error('Chat socket closed unexpectedly');
-                        };
-                    }
+                function connect() {
+                    socket = new WebSocket('ws://' + window.location.host + '/ws/console/');
+                    socket.onmessage = function(e) {
+                        var console = document.getElementById('console');
+                        console.innerHTML += e.data + '<br>';
+                        console.scrollTop = console.scrollHeight;
 
-                    connect();
+                        // Check for the specific message from the server
+                        if (e.data === 'Someone is already using the console') {
+                            reconnect = false;
+                        }
+                    };
+                    socket.onclose = function(e) {
+                        console.error('Chat socket closed unexpectedly');
 
-                    setInterval(function() {
-                        if (socket.readyState !== WebSocket.OPEN) {
-                            var console = document.getElementById('console');
-                            console.innerHTML = "Server is offline.";
+                        // Only attempt to reconnect if the flag is set
+                        if (reconnect) {
                             connect();
                         }
-                    }, 3000); // every 3 seconds
+                    };
+                }
 
-                    function sendCommand() {
-                        var command = document.getElementById('command');
-                        var console = document.getElementById('console');
-                        console.innerHTML += command.value + '<br>';
-                        socket.send(command.value);
-                        command.value = '';
+                connect();
+
+                function sendCommand() {
+                    var command = document.getElementById('command');
+                    var console = document.getElementById('console');
+                    console.innerHTML += command.value + '<br>';
+                    socket.send(command.value);
+                    command.value = '';
+                }
+
+                document.getElementById('command').addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        sendCommand();
                     }
+                });
 
-                    document.getElementById('command').addEventListener('keydown', function(e) {
-                        if (e.key === 'Enter') {
-                            sendCommand();
-                        }
-                    });
+                window.addEventListener('beforeunload', function(event) {
+                    // Close the WebSocket connection
+                    socket.close();
+                });
 
-                    window.addEventListener('beforeunload', function(event) {
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'hidden') {
+                        // The page is no longer visible
                         // Close the WebSocket connection
                         socket.close();
-                    });
+                    } else if (document.visibilityState === 'visible') {
+                        // The page is now visible
+                        // Reconnect the WebSocket
+                        connect();
+                    }
+                });
 
-                    document.addEventListener('visibilitychange', function() {
-                        if (document.visibilityState === 'hidden') {
-                            // The page is no longer visible
-                            // Close the WebSocket connection
-                            socket.close();
-                        } else if (document.visibilityState === 'visible') {
-                            // The page is now visible
-                            // Reconnect the WebSocket
-                            connect();
-                        }
-                    });
+                document.getElementById('stopButton').addEventListener('click', function() {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send('/stop');
+                    }
+                });
 
-                    document.getElementById('stopButton').addEventListener('click', function() {
-                        if (socket.readyState === WebSocket.OPEN) {
-                            socket.send('/stop');
-                        }
-                    });
-
-                </script>
+            </script>
         </div>
     </div>
 {% endblock %}

@@ -1,8 +1,11 @@
 import asyncio
 import psutil
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
+from django.contrib.auth.models import Group
 import json
 import threading
+import time
+
 from .views import minecraft_server
 
 
@@ -67,16 +70,35 @@ class SystemConsumer(AsyncWebsocketConsumer):
 
 
 class ConsoleConsumer(WebsocketConsumer):
+    connection_active = False
+
     def connect(self):
-        if minecraft_server.process:
-            self.accept()
-            threading.Thread(target=self.send_output).start()
+        global connection_active
+        if self.scope["user"].is_authenticated:
+            if self.scope["user"].is_superuser or Group.objects.get(name="Server Manager") in self.scope["user"].groups.all():
+                if not ConsoleConsumer.connection_active:
+                    ConsoleConsumer.connection_active = True
+                    if minecraft_server.process:
+                        self.accept()
+                        threading.Thread(target=self.send_output).start()
+                    else:
+                        self.accept()
+                        threading.Thread(target=self.send_offline).start()
+                else:
+                    self.accept()
+                    self.send("Someone is already using the console")
+                    self.close()
+            else:
+                time.sleep(10)
+                self.close(code=403)
         else:
-            self.accept()
-            threading.Thread(target=self.send_offline).start()
+            time.sleep(10)
+            self.close(code=403)
+
 
     def disconnect(self, close_code):
-        pass
+        global connection_active
+        ConsoleConsumer.connection_active = False
 
     def receive(self, text_data):
         if minecraft_server.process and minecraft_server.process.stdin:
@@ -90,3 +112,4 @@ class ConsoleConsumer(WebsocketConsumer):
 
     def send_offline(self):
         self.send("Server Offline")
+
